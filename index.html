@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Siyanathi Eatery | Carletonville</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;margin:0;background:#111;color:#fff}
+    header{background:#000;padding:15px;text-align:center;position:sticky;top:0;z-index:10}
+    header h1{margin:0;color:#f9a826}
+    .top{color:#fff;font-size:14px}
+    .hero{background:#f9a826;color:#111;padding:20px;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:15px;padding:15px}
+    .card{background:#1e1e1e;border-radius:14px;overflow:hidden;border:1px solid #333}
+    .card img{width:100%;height:180px;object-fit:cover}
+    .card-content{padding:12px}
+    .price{color:#f9a826;font-size:22px;font-weight:bold}
+    button{background:#f9a826;color:#000;border:0;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer;width:100%}
+    button:hover{background:#ffc04d}
+    input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
+    input[type="radio"]{width:auto;margin:0 6px 0 0}
+    .checkout{background:#fff;color:#111;padding:20px;margin:15px;border-radius:14px}
+    .map{width:100%;height:300px;border:0;border-radius:12px}
+    .flex{display:flex;justify-content:space-between}
+    .delivery-option{display:block;margin:10px 0}
+    @media(max-width:480px){header h1{font-size:24px}.top{line-height:1.7}.checkout{padding:16px;margin:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🍽️ SIYANATHI EATERY</h1>
+    <div class="top">19 Ada Street, Carletonville 2500 | 📞 <a href="tel:0664913959" style="color:#f9a826">066 491 3959</a> | Open Mon-Fri 11am-5pm</div>
+  </header>
+  <section class="hero">
+    <h2>Authentic South African Flavours</h2>
+    <p>Mon-Thu R80 | Friday R110 | Home-cooked Daily</p>
+  </section>
+
+  <main>
+    <section class="grid" id="menu" aria-label="Menu"></section>
+
+    <section class="checkout">
+      <h2>🛒 Your Cart</h2>
+      <div id="cart" aria-live="polite">Cart is empty</div>
+      <h3>Delivery Option</h3>
+      <label class="delivery-option"><input type="radio" name="del" value="Pickup - FREE" checked onchange="calc()"> Pickup - FREE at 19 Ada Street, Carletonville 2500</label>
+      <label class="delivery-option"><input type="radio" name="del" value="Delivery - R30" onchange="calc()"> Delivery - R30 in Carletonville</label>
+      <h3>Checkout Details</h3>
+      <input id="cname" placeholder="Your Full Name" autocomplete="name">
+      <input id="cphone" type="tel" placeholder="Your Phone e.g. 066 000 0000" autocomplete="tel">
+      <textarea id="caddr" placeholder="Delivery Address (if delivery)" autocomplete="street-address"></textarea>
+      <h2 id="total">Total: R0</h2>
+      <button type="button" onclick="checkout()">✅ CHECKOUT VIA WHATSAPP</button>
+      <p style="text-align:center;font-size:13px">You will be redirected to WhatsApp to confirm. Email: <a href="mailto:siyanathieatery@gmail.com">siyanathieatery@gmail.com</a></p>
+    </section>
+
+    <section style="padding:15px">
+      <h2>📍 Find Us</h2>
+      <p>19 Ada Street, Carletonville 2500</p>
+      <iframe class="map" title="Map showing Siyanathi Eatery in Carletonville" src="https://maps.google.com/maps?q=19%20Ada%20Street%20Carletonville%202500&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+      <p><a href="https://www.google.com/maps/search/?api=1&amp;query=19+Ada+Street+Carletonville+2500" target="_blank" rel="noopener" style="color:#f9a826">👉 Get Directions on Google Maps</a></p>
+    </section>
+  </main>
+  <footer style="text-align:center;padding:20px;color:#aaa">© Siyanathi Eatery • Proudly South African</footer>
+
+  <script>
+    const meals = [
+      {name:"Monday - Mogodu with Dumpling / Pap",desc:"Mogodu / Thakwana / Sebete & Veg/Salad",price:80,img:"https://images.unsplash.com/photo-1547592180-85f173990554?w=800&q=80"},
+      {name:"Tuesday - Potjekos",desc:"Potjekos with Dumpling/Pap",price:80,img:"https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=800&q=80"},
+      {name:"Tuesday - Lambshank / Oxtail",desc:"With Mash - Order a day before",price:80,img:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800&q=80"},
+      {name:"Wednesday - Grilled Beef / Chicken",desc:"Pap/Rice & Veg/Salad",price:80,img:"https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=800&q=80"},
+      {name:"Thursday - Beef Stew / Grilled Lamb",desc:"Dumpling/Rice & Veg/Salad",price:80,img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80"},
+      {name:"Friday - Braai Meal",desc:"Beef, Chicken & Wors",price:110,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80"},
+      {name:"Friday - Half Skop",desc:"With Dumpling/Pap & Veg/Salad",price:110,img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80"}
+    ];
+    const cart = [];
+
+    function renderMenu(){
+      document.getElementById('menu').innerHTML = meals.map((meal,index) => `
+        <article class="card">
+          <img src="${meal.img}" alt="${meal.name}" loading="lazy">
+          <div class="card-content">
+            <b>${meal.name}</b>
+            <p>${meal.desc}</p>
+            <div class="flex"><span class="price">R${meal.price}</span></div>
+            <button type="button" onclick="addToCart(${index})">Add to Cart</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function addToCart(index){
+      cart.push(meals[index]);
+      calc();
+    }
+
+    function calc(){
+      const subtotal = cart.reduce((sum,meal) => sum + meal.price,0);
+      const delivery = document.querySelector('input[name="del"]:checked').value.includes('R30') ? 30 : 0;
+      const total = subtotal + delivery;
+      document.getElementById('cart').innerHTML = cart.length
+        ? cart.map(meal => `${meal.name} - R${meal.price}`).join('<br>') + `<br><b>Subtotal R${subtotal} + Delivery R${delivery}</b>`
+        : 'Cart is empty';
+      document.getElementById('total').innerText = `Total: R${total}`;
+      return {subtotal,delivery,total};
+    }
+
+    function checkout(){
+      const amount = calc();
+      if(!cart.length){
+        alert('Add something to your cart first');
+        return;
+      }
+      const deliveryOption = document.querySelector('input[name="del"]:checked').value;
+      const name = document.getElementById('cname').value.trim();
+      const phone = document.getElementById('cphone').value.trim();
+      const address = document.getElementById('caddr').value.trim();
+      const orderItems = cart.map(meal => `- ${meal.name} R${meal.price}`).join('\n');
+      const message = `Hello Siyanathi Eatery! NEW ORDER:\n\n${orderItems}\n\n${deliveryOption}\nTotal: R${amount.total}\nName: ${name}\nPhone: ${phone}\nAddress: ${address}`;
+      window.open(`https://wa.me/27664913959?text=${encodeURIComponent(message)}`,'_blank');
+    }
+
+    renderMenu();
+  </script>
+</body>
+</html>
